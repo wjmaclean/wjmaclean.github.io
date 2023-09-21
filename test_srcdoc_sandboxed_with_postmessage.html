@@ -1,0 +1,19 @@
+<HTML>
+    <head>
+        <title>Test: sandboxed-srcdoc iframe with postMessage from parent</title>
+    </head>
+    <body>
+        <iframe sandbox='allow-scripts' srcdoc='<html><body><script>window.addEventListener("message", (event) => { var target = event.source; console.log("srcdoc received: " + event.data); target.postMessage(event.data + " from me", "*");});</script></body></html>'></iframe>
+        <div id='response'></div>
+        <script>
+            window.addEventListener("message", (event) => { document.getElementById('response').innerText = 'srcdoc frame response: ' + event.data; });
+            window.onload = () => {
+                // Note: this next line is required to slow things down enough so that the child can respond?
+                //       Yeah, that's kludgey ... I need to figure out a more principled sync method.
+                console.log("loaded, parent contacting child ...");
+                
+                frames[0].postMessage("hello", "*");
+            };
+        </script>
+    </body>
+</HTML>
